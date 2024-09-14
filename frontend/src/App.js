@@ -1,5 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
+import WebcamCapture from "./components/webcam/webcam"
 import VoiceInput from './components/voice-input/index'
 
 function App() {
@@ -7,6 +7,7 @@ function App() {
     <div className="App">
       <VoiceInput>
       </VoiceInput>
+      <WebcamCapture/>
     </div>
   );
 }
