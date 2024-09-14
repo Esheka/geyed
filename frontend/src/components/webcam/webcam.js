@@ -6,8 +6,14 @@ const WebcamCapture = () => {
     const [imgSrc, setImgSrc] = React.useState(null);
   
     const capture = React.useCallback(() => {
-      const imageSrc = webcamRef.current.getScreenshot();
-      setImgSrc(imageSrc);
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:5000/')
+        xhr.onload = function() {
+            console.log(JSON.parse(xhr.responseText))
+        };
+        xhr.send();
+        const imageSrc = webcamRef.current.getScreenshot();
+        setImgSrc(imageSrc);
     }, [webcamRef, setImgSrc]);
   
     return (
