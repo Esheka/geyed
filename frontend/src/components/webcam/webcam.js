@@ -7,7 +7,7 @@ const WebcamCapture = () => {
   
     const capture = React.useCallback(() => {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'http://localhost:5000/')
+        xhr.open('GET', 'https://api.geyedme.co')
         xhr.onload = function() {
             console.log(JSON.parse(xhr.responseText))
         };
