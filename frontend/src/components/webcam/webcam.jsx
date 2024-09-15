@@ -17,7 +17,7 @@ const WebcamCapture = () => {
   const api = process.env.REACT_APP_OPENAI_API_KEY;
   const inferEngine = new InferenceEngine();
 
-  
+
   useEffect(() => {
     const startWorker = async () => {
       const id = await inferEngine.startWorker(PROJECT_URL, MODEL_VERSION, PUBLISHABLE_ROBOFLOW_API_KEY);
@@ -39,7 +39,7 @@ const WebcamCapture = () => {
           setImgSrc(imageSrc);
           console.log(imageSrc);
           console.log(api);
-      
+
           const gpt = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -68,12 +68,12 @@ const WebcamCapture = () => {
               'max_tokens': 400
             })
           });
-      
+
           const response = await gpt.json();
           console.log(response);
           const messageContent = response.choices[0].message.content;
           console.log(messageContent);
-      
+
           if (messageContent === 'yes') {
             const obj = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
@@ -103,7 +103,7 @@ const WebcamCapture = () => {
                 'max_tokens': 600
               })
             });
-      
+
             const newRes = await obj.json();
             console.log(newRes);
             const newMes = newRes.choices[0].message.content;
@@ -137,11 +137,11 @@ const WebcamCapture = () => {
     if (workerId) {
       const intervalId = setInterval(() => {
         runInference();
-      }, 2000); // Adjust the interval as necessary
+      }, 3000); // Adjust the interval as necessary
 
       return () => clearInterval(intervalId);
     }
-  }, [workerId, runInference]); 
+  }, [workerId, runInference]);
 
   return (
     <>
