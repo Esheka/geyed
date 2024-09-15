@@ -1,0 +1,10 @@
+services:
+  web:
+    domainname: geyedme.co
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - mode: ingress
+        target: 3000
+    restart: unless-stopped
