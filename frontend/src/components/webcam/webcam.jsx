@@ -54,7 +54,7 @@ const WebcamCapture = () => {
                   'content': [
                     {
                       'type': 'text',
-                      'text': 'Give me either a lowercase yes or a no for if there is an object up close that could be an obstruction or tripping hazard for those that are visually impaired. Again, please just do a one word lowercase yes or no answer do not return more than that one word.'
+                      'text': 'Give me either a lowercase yes or a no for if there is an object up close that is not a face that could be an obstruction or tripping hazard for those that are visually impaired. Again, please just do a one word lowercase yes or no answer do not return more than that one word.'
                     },
                     {
                       'type': 'image_url',
