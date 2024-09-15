@@ -7,7 +7,7 @@ function App() {
   const text = "Text-to-speech feature is now available on relatively any website or blog.";
   return (
     <div className="App">
-      <VoiceInput>
+      <VoiceInput className="voiceInput">
       </VoiceInput>
       <WebcamCapture />
       <TextToSpeech text={text} />
