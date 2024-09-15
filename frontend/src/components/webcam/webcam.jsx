@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Webcam from 'react-webcam';
 import VoiceInput from '../voice-input';
 import { InferenceEngine } from "inferencejs";
+import { textToSpeech } from './captureImage';
+
 
 
 const WebcamCapture = () => {
@@ -29,7 +31,89 @@ const WebcamCapture = () => {
       const video = webcamRef.current.video; // Access the video element
       const imageBitmap = await createImageBitmap(video);
       const predictions = await inferEngine.infer(workerId, imageBitmap); // Perform inference on the video stream
-      console.log(predictions); // Handle the predictions
+      console.log(predictions);
+
+      if (predictions.length > 0) {
+        try {
+          const imageSrc = webcamRef.current.getScreenshot();
+          setImgSrc(imageSrc);
+          console.log(imageSrc);
+          console.log(api);
+      
+          const gpt = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + api
+            },
+            body: JSON.stringify({
+              'model': 'gpt-4o',
+              'messages': [
+                {
+                  'role': 'user',
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': 'Give me either a lowercase yes or a no for if there is an object up close that could be an obstruction or tripping hazard for those that are visually impaired. Again, please just do a one word lowercase yes or no answer do not return more than that one word.'
+                    },
+                    {
+                      'type': 'image_url',
+                      'image_url': {
+                        'url': imgSrc
+                      }
+                    }
+                  ]
+                }
+              ],
+              'max_tokens': 400
+            })
+          });
+      
+          const response = await gpt.json();
+          console.log(response);
+          const messageContent = response.choices[0].message.content;
+          console.log(messageContent);
+      
+          if (messageContent === 'yes') {
+            const obj = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + api
+              },
+              body: JSON.stringify({
+                'model': 'gpt-4o',
+                'messages': [
+                  {
+                    'role': 'user',
+                    'content': [
+                      {
+                        'type': 'text',
+                        'text': 'Describe the object or obstruction in my way and please try an navigate me around it.'
+                      },
+                      {
+                        'type': 'image_url',
+                        'image_url': {
+                          'url': imgSrc
+                        }
+                      }
+                    ]
+                  }
+                ],
+                'max_tokens': 600
+              })
+            });
+      
+            const newRes = await obj.json();
+            console.log(newRes);
+            const newMes = newRes.choices[0].message.content;
+            console.log(newMes);
+            textToSpeech(newMes);
+          }
+        } catch (error) {
+          console.error("Error during API call:", error);
+        }
+      }
     }
   };
 
@@ -68,7 +152,6 @@ const WebcamCapture = () => {
         screenshotFormat="image/webp"
         videoConstraints={videoConstraints} // Apply video constraints dynamically
       />
-      {imgSrc && <img src={imgSrc} alt="" />}
     </>
   );
 };

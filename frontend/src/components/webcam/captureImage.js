@@ -1,4 +1,3 @@
-
 export const captureImage = async (webcamRef, setImgSrc, text, apiKey) => {
   const imageSrc = webcamRef.current.getScreenshot();
   setImgSrc(imageSrc);
@@ -41,7 +40,7 @@ export const captureImage = async (webcamRef, setImgSrc, text, apiKey) => {
   textToSpeech(messageContent);
 };
 
-function textToSpeech(text) {
+export function textToSpeech(text) {
   const synth = window.speechSynthesis;
   const utterance = new SpeechSynthesisUtterance(text);
   const voices = synth.getVoices();
