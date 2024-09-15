@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { captureImage } from '../webcam/captureImage';
 
-const VoiceInput = () => {
+const VoiceInput = ({ webcamRef, setImgSrc, api }) => {
     const [textInput, setTextInput] = useState('');
     const [isListening, setIsListening] = useState(false);
     
@@ -18,6 +19,7 @@ const VoiceInput = () => {
     const handleCapturedText = () => {
         // This is the function you'll call after 5 seconds
         console.log("Captured Text (in function):", textCapture.current); 
+        captureImage(webcamRef, setImgSrc, textCapture.current, api);
         // You can add any other logic you want to perform with the captured text here
     };
 

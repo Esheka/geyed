@@ -1,37 +1,23 @@
-import Webcam from "react-webcam";
-import React from "react";
+import React from 'react';
+import Webcam from 'react-webcam';
+import VoiceInput from '../voice-input';
 
 const WebcamCapture = () => {
-    const webcamRef = React.useRef(null);
-    const [imgSrc, setImgSrc] = React.useState(null);
-  
-    const capture = React.useCallback(() => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://api.geyedme.co')
-        xhr.onload = function() {
-            console.log(JSON.parse(xhr.responseText))
-        };
-        xhr.send();
-        const imageSrc = webcamRef.current.getScreenshot();
-        setImgSrc(imageSrc);
-    }, [webcamRef, setImgSrc]);
-  
-    return (
-      <>
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-        />
-        <button onClick={capture}>Capture photo</button>
-        {imgSrc && (
-          <img
-            src={imgSrc}
-            alt=""
-          />
-        )}
-      </>
-    );
-  };
+  const webcamRef = React.useRef(null);
+  const [imgSrc, setImgSrc] = React.useState(null);
+  const api = process.env.REACT_APP_OPENAI_API_KEY;
 
-  export default WebcamCapture;
+  return (
+    <>
+      <VoiceInput webcamRef={webcamRef} setImgSrc={setImgSrc} api={api}/>
+      <Webcam
+        audio={false}
+        ref={webcamRef}
+        screenshotFormat="image/webp"
+      />
+      {imgSrc && <img src={imgSrc} alt="" />}
+    </>
+  );
+};
+
+export default WebcamCapture;
