@@ -4,11 +4,11 @@ import { captureImage } from '../webcam/captureImage';
 const VoiceInput = ({ webcamRef, setImgSrc, api }) => {
     const [textInput, setTextInput] = useState('');
     const [isListening, setIsListening] = useState(false);
-    
+
     const [transcript, setTranscript] = useState('');
     const [currtext, setCurrtext] = useState('');
     const [cacheLen, setCacheLen] = useState(0);
-    
+
     const recognitionRef = useRef(null);
     const hasStartedListening = useRef(false);
     const isCapturing = useRef(false); // To track if we're capturing speech after the key phrase
@@ -20,14 +20,14 @@ const VoiceInput = ({ webcamRef, setImgSrc, api }) => {
     const handleCapturedText = () => {
         // This is the function you'll call after 5 seconds
         if (!hasSent.current) {
-            console.log("Captured Text (in function):", textCapture.current); 
+            console.log("Captured Text (in function):", textCapture.current);
             captureImage(webcamRef, setImgSrc, textCapture.current, api);
             hasSent.current = true;
         }
         else {
             hasSent.current = false;
         }
-        
+
         // You can add any other logic you want to perform with the captured text here
     };
 
@@ -55,34 +55,34 @@ const VoiceInput = ({ webcamRef, setImgSrc, api }) => {
             for (let i = 0; i < event.results.length; i++) {
                 text += event.results[i][0].transcript;
             }
-            
-            
+
+
             setCacheLen(prevCacheLen => {
                 if (text.substring(prevCacheLen, text.length).toLowerCase().includes('hey guide me')) {
                     console.log(text.length);
                     const newCacheLen = text.length;
                     console.log(text.substring(prevCacheLen, text.length));
-                    setTranscript(text.substring(newCacheLen, text.length)); 
+                    setTranscript(text.substring(newCacheLen, text.length));
                     isCapturing.current = true;
                     captureTimeoutRef.current = setTimeout(() => {
-                    isCapturing.current = false;
-                    sending.current = true;
-                    handleCapturedText();
+                        isCapturing.current = false;
+                        sending.current = true;
+                        handleCapturedText();
                     }, 5000); // Capture for 5 seconds
-                    return newCacheLen; 
-                } 
+                    return newCacheLen;
+                }
                 else {
                     if (isCapturing.current) {
-                        textCapture.current =  text.substring(prevCacheLen, text.length);
+                        textCapture.current = text.substring(prevCacheLen, text.length);
                         console.log(text.substring(prevCacheLen, text.length));
                     }
-                    setTranscript(text.substring(prevCacheLen, text.length)); 
-                    return prevCacheLen; 
+                    setTranscript(text.substring(prevCacheLen, text.length));
+                    return prevCacheLen;
                 }
             });
         };
 
-        
+
 
         recognition.onerror = (event) => {
             console.error('Speech recognition error: ', event.error);
@@ -99,7 +99,7 @@ const VoiceInput = ({ webcamRef, setImgSrc, api }) => {
             hasStartedListening.current = true;
         }
 
-        
+
     }, []);
 
 
@@ -110,16 +110,7 @@ const VoiceInput = ({ webcamRef, setImgSrc, api }) => {
         }
     };
 
-    return (
-        <div style={{ display: 'block' }}>
-            <textarea
-                style={{ width: '100%', height: '150px' }}
-                disabled={isListening}
-                value={isListening ? textInput + (transcript.length ? ' ' + transcript : '') : textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-            />
-        </div>
-    );
+    return (null);
 };
 
 export default VoiceInput;
