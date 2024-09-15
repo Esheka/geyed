@@ -37,23 +37,31 @@ export const captureImage = async (webcamRef, setImgSrc, text, apiKey) => {
   console.log(response);
   const messageContent = response.choices[0].message.content;
   console.log(messageContent);
-  textToSpeech(messageContent);
+  await textToSpeech(messageContent);
 };
 
 export function textToSpeech(text) {
-  const synth = window.speechSynthesis;
-  const utterance = new SpeechSynthesisUtterance(text);
-  const voices = synth.getVoices();
+  return new Promise((resolve) => {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = synth.getVoices();
 
-  utterance.voice = voices[2];
-  utterance.pitch = 1;
-  utterance.rate = 1.1;
-  utterance.volume = 1;
+    utterance.voice = voices[2];
+    utterance.pitch = 1;
+    utterance.rate = 1.1;
+    utterance.volume = 1;
 
-  // Automatically start speaking the text
-  synth.speak(utterance);
+    // Resolve the promise when the speech finishes
+    utterance.onend = () => {
+      resolve();
+    };
 
-  return () => {
-    synth.cancel();
-  };
+    // Automatically start speaking the text
+    synth.speak(utterance);
+
+    return () => {
+      synth.cancel();
+    };
+  });
 }
+

@@ -13,6 +13,7 @@ const WebcamCapture = () => {
   const webcamRef = React.useRef(null);
   const [workerId, setWorkerId] = useState(null);
   const [imgSrc, setImgSrc] = React.useState(null);
+  const [inferRunning, setInferRunning] = useState(false);
   const [videoConstraints, setVideoConstraints] = useState({});
   const api = process.env.REACT_APP_OPENAI_API_KEY;
   const inferEngine = new InferenceEngine();
@@ -22,9 +23,28 @@ const WebcamCapture = () => {
     const startWorker = async () => {
       const id = await inferEngine.startWorker(PROJECT_URL, MODEL_VERSION, PUBLISHABLE_ROBOFLOW_API_KEY);
       setWorkerId(id);
+      setInferRunning(true);
     };
     startWorker();
   }, [inferEngine]);
+
+  const stopWorker = async () => {
+    if (workerId) {
+      try {
+        await inferEngine.stopWorker(workerId);
+        setInferRunning(false);
+        console.log(`Worker with ID ${workerId} stopped`);
+      } catch (error) {
+        console.error("Error stopping worker:", error);
+      }
+    }
+  };
+
+  const startLateWorker = async () => {
+    const id = await inferEngine.startWorker(PROJECT_URL, MODEL_VERSION, PUBLISHABLE_ROBOFLOW_API_KEY);
+    setWorkerId(id);
+    setInferRunning(true);
+  };
 
   const runInference = async () => {
     if (webcamRef.current && workerId) {
@@ -35,6 +55,7 @@ const WebcamCapture = () => {
 
       if (predictions.length > 0) {
         try {
+          //stopWorker();
           const imageSrc = webcamRef.current.getScreenshot();
           setImgSrc(imageSrc);
           console.log(imageSrc);
@@ -54,7 +75,7 @@ const WebcamCapture = () => {
                   'content': [
                     {
                       'type': 'text',
-                      'text': 'Give me either a lowercase yes or a no for if there is an object up close that is not a face that could be an obstruction or tripping hazard for those that are visually impaired. Again, please just do a one word lowercase yes or no answer do not return more than that one word.'
+                      'text': 'Give me either a lowercase yes or a no for if there is an object up close that could be an obstruction or tripping hazard for those that are visually impaired. Again, please just do a one word lowercase yes or no answer do not return more than that one word.'
                     },
                     {
                       'type': 'image_url',
@@ -75,6 +96,7 @@ const WebcamCapture = () => {
           console.log(messageContent);
 
           if (messageContent === 'yes') {
+            await textToSpeech("Obstruction detected, please wait");
             const obj = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
               headers: {
@@ -108,8 +130,9 @@ const WebcamCapture = () => {
             console.log(newRes);
             const newMes = newRes.choices[0].message.content;
             console.log(newMes);
-            textToSpeech(newMes);
+            await textToSpeech(newMes);
           }
+          //startLateWorker();
         } catch (error) {
           console.error("Error during API call:", error);
         }
