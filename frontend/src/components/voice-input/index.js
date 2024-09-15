@@ -15,11 +15,19 @@ const VoiceInput = ({ webcamRef, setImgSrc, api }) => {
     const sending = useRef(false);
     const textCapture = useRef('');
     const captureTimeoutRef = useRef(null);
+    const hasSent = useRef(false);
 
     const handleCapturedText = () => {
         // This is the function you'll call after 5 seconds
-        console.log("Captured Text (in function):", textCapture.current); 
-        captureImage(webcamRef, setImgSrc, textCapture.current, api);
+        if (!hasSent.current) {
+            console.log("Captured Text (in function):", textCapture.current); 
+            captureImage(webcamRef, setImgSrc, textCapture.current, api);
+            hasSent.current = true;
+        }
+        else {
+            hasSent.current = false;
+        }
+        
         // You can add any other logic you want to perform with the captured text here
     };
 
