@@ -1,13 +1,8 @@
 services:
   web:
     domainname: geyedme.co
-    deploy:
-      resources:
-        reservations:
-          cpus: "0.5"
-          memory: 256M
     build:
-      context: ./frontend
+      context: ./
       dockerfile: Dockerfile
     ports:
       - mode: ingress

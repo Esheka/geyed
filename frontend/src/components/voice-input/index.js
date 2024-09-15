@@ -12,11 +12,12 @@ const VoiceInput = () => {
     const hasStartedListening = useRef(false);
     const isCapturing = useRef(false); // To track if we're capturing speech after the key phrase
     const sending = useRef(false);
+    const textCapture = useRef('');
     const captureTimeoutRef = useRef(null);
 
-    const handleCapturedText = (text) => {
+    const handleCapturedText = () => {
         // This is the function you'll call after 5 seconds
-        console.log("Captured Text (in function):", text); 
+        console.log("Captured Text (in function):", textCapture.current); 
         // You can add any other logic you want to perform with the captured text here
     };
 
@@ -51,25 +52,20 @@ const VoiceInput = () => {
                     console.log(text.length);
                     const newCacheLen = text.length;
                     console.log(text.substring(prevCacheLen, text.length));
-                    setTranscript(text.substring(newCacheLen, text.length)); // Update transcript immediately
-                    // potato
+                    setTranscript(text.substring(newCacheLen, text.length)); 
                     isCapturing.current = true;
                     captureTimeoutRef.current = setTimeout(() => {
                     isCapturing.current = false;
                     sending.current = true;
+                    handleCapturedText();
                     }, 5000); // Capture for 5 seconds
                     return newCacheLen; 
                 } 
                 else {
                     if (isCapturing.current) {
-                        setCurrtext(prevCapturedText => prevCapturedText + text.substring(prevCacheLen, text.length));
+                        textCapture.current =  text.substring(prevCacheLen, text.length);
                         console.log(text.substring(prevCacheLen, text.length));
                     }
-                    if (sending.current) {
-                        handleCapturedText(text.substring(prevCacheLen, text.length));
-                        sending.current = false;
-                    }
-                    
                     setTranscript(text.substring(prevCacheLen, text.length)); 
                     return prevCacheLen; 
                 }
