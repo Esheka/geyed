@@ -14,6 +14,7 @@ const WebcamCapture = () => {
   const [workerId, setWorkerId] = useState(null);
   const [imgSrc, setImgSrc] = React.useState(null);
   const [inferRunning, setInferRunning] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [videoConstraints, setVideoConstraints] = useState({});
   const api = process.env.REACT_APP_OPENAI_API_KEY;
   const inferEngine = new InferenceEngine();
@@ -53,7 +54,8 @@ const WebcamCapture = () => {
       const predictions = await inferEngine.infer(workerId, imageBitmap); // Perform inference on the video stream
       console.log(predictions);
 
-      if (predictions.length > 0) {
+      if (predictions.length > 0 && !processing) {
+        setProcessing(true);
         try {
           //stopWorker();
           const imageSrc = webcamRef.current.getScreenshot();
@@ -132,6 +134,7 @@ const WebcamCapture = () => {
             console.log(newMes);
             await textToSpeech(newMes);
           }
+          setProcessing(false);
           //startLateWorker();
         } catch (error) {
           console.error("Error during API call:", error);
